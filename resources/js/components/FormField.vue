@@ -59,8 +59,8 @@
 </template>
 <style scoped>
 .google-map {
-  width: 720px;
-  height: 300px;
+  width: 900px;
+  height: 600px;
   margin: 0 auto;
   background: gray;
   border:solid 1px #ccc;
@@ -104,7 +104,9 @@ export default {
     );
 
     places.addListener("place_changed", () => {
+      console.log(places.getPlace())
       this.fillInLatLng({
+        address: places.getPlace().formatted_address,
         lat: places.getPlace().geometry.location.lat(),
         lng: places.getPlace().geometry.location.lng(),
         marker,
@@ -156,9 +158,10 @@ export default {
       this.value = value;
     },
 
-    fillInLatLng({ lat, lng, marker, map }) {
+    fillInLatLng({ address, lat, lng, marker, map }) {
       this.field.latitude = lat;
       this.field.longitude = lng;
+      this.value = address;
 
       marker.setPosition( new google.maps.LatLng( lat, lng ) );
       map.panTo( new google.maps.LatLng( lat, lng ) );
