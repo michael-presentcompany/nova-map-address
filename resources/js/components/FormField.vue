@@ -2,6 +2,16 @@
     <default-field :field="field">
         <template slot="field">
             <div class="google-map w-full" :id="mapName"></div><br>
+          <div class="w-full">
+            <vue-google-autocomplete
+                :id="map"
+                :classname="form-control"
+                :placeholder="field.name"
+                v-on:placechanged="getAddressData"
+            >
+            </vue-google-autocomplete>
+          </div><br>
+
             <input :id="field.name" type="text"
                    class="w-full form-control form-input form-input-bordered"
                    :class="errorClasses"
@@ -54,6 +64,7 @@
 </style>
 <script>
     import { FormField, HandlesValidationErrors } from 'laravel-nova'
+    import VueGoogleAutocomplete from 'vue-google-autocomplete'
 
     export default {
         name: 'google-map',
