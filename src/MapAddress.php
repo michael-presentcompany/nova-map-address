@@ -23,6 +23,12 @@ class MapAddress extends Field
      */
     public function initLocation($map)
     {
+        if(empty($map)) {
+            return $this->withMeta([
+                'initial_lat' => 35,
+                'initial_lng' => 35,
+            ]);
+        }
         return $this->withMeta([
             'initial_lat' => json_decode($map)->lat,
             'initial_lng' => json_decode($map)->lng,
