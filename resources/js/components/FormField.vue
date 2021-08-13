@@ -80,16 +80,18 @@ export default {
   data() {
     return {
       mapName: `${this.name || 'gem'}-map`,
-      placeResult: undefined
+      latLngResult: undefined
     }
   },
   mounted() {
     let address = this;
+    let initialValues = JSON.parse(this.field.value);
     let lat = this.field.lat || this.field.initial_lat || 38.261842;
     let lng = this.field.lng ||this.field.initial_lng || -0.6868031;
 
     this.field.latitude = lat;
     this.field.longitude = lng;
+    this.value = initialValues.formatted_address;
 
     const element = document.getElementById(this.mapName);
     const mapsLatLng = new google.maps.LatLng(lat, lng);
@@ -111,24 +113,12 @@ export default {
         { types: ["geocode"] }
     );
 
-    map.setCenter(mapsLatLng);
-    marker.setPosition(mapsLatLng);
-
     places.addListener('place_changed', () => {
       const place = places.getPlace();
       const placeLat = place.geometry.location.lat();
       const placeLng = place.geometry.location.lng();
 
       this.fillInLatLng({
-        place: {
-          address_components: place.address_components,
-          formatted_address: place.formatted_address,
-          adr_address: place.adr_address,
-          place_id: place.place_id,
-          url: place.url,
-          lat: placeLat,
-          lng: placeLng
-        },
         address: place.formatted_address,
         lat: placeLat,
         lng: placeLng,
@@ -148,6 +138,12 @@ export default {
             address.value = result.formatted_address;
             address.field.lat = event.latLng.lat().toFixed(6);
             address.field.lng = event.latLng.lng().toFixed(6);
+
+            this.fillInLatLng({
+              address: result.formatted_address,
+              lat: event.latLng.lat(),
+              lng: event.latLng.lng()
+            });
           } else {
             console.error('No results found');
           }
@@ -164,7 +160,7 @@ export default {
     },
 
     fill(formData) {
-      formData.append(this.field.attribute, this.placeResult || '');
+      formData.append(this.field.attribute, this.latLngResult || '');
       formData.append(this.field.latitude, this.field.lat || '');
       formData.append(this.field.longitude, this.field.lng || '');
     },
@@ -173,14 +169,14 @@ export default {
       this.value = value;
     },
 
-    fillInLatLng({ address, place, lat, lng, marker, map }) {
+    fillInLatLng({ address, lat, lng, marker, map }) {
       this.field.latitude = lat;
       this.field.longitude = lng;
-      this.placeResult = JSON.stringify(place);
+      this.latLngResult = JSON.stringify({formatted_address: address, lat, lng});
       this.value = address;
 
-      marker.setPosition(new google.maps.LatLng( lat, lng ));
-      map.panTo(new google.maps.LatLng( lat, lng ));
+      !!marker && marker.setPosition(new google.maps.LatLng( lat, lng ));
+      !!map && map.panTo(new google.maps.LatLng( lat, lng ));
     },
   },
 }
