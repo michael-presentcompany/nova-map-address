@@ -1,62 +1,62 @@
 <template>
-  <default-field :field="field">
-    <template slot="field">
-      <div class="google-map w-full" :id="mapName" />
+<default-field :field="field">
+<template slot="field">
+  <div class="google-map w-full" :id="mapName" />
 
-      <br>
+  <br>
 
-      <div class="w-full">
-        <vue-google-autocomplete
-            :id="map"
-            :classname="form-control"
-            :placeholder="field.name"
-        >
-          <input
-              :id="field.name"
-              type="text"
-              class="w-full form-control form-input form-input-bordered"
-              :class="errorClasses"
-              :placeholder="field.name"
-              v-model="value"
-          />
-        </vue-google-autocomplete>
+  <div class="w-full">
+    <vue-google-autocomplete
+        :id="map"
+        :classname="form-control"
+        :placeholder="field.name"
+    >
+      <input
+          :id="field.name"
+          type="text"
+          class="w-full form-control form-input form-input-bordered"
+          :class="errorClasses"
+          :placeholder="field.name"
+          v-model="value"
+      />
+    </vue-google-autocomplete>
+  </div>
+
+  <br>
+
+  <div class="flex flex-wrap w-full">
+    <div class="flex w-1/2">
+      <div class="w-1/5 py-3 pl-2">
+        <label class="inline-block text-80 pt-2 leading-tight" :for="field.latitude">Lat</label>
       </div>
-
-      <br>
-
-      <div class="flex flex-wrap w-full">
-        <div class="flex w-1/2">
-          <div class="w-1/5 py-3 pl-2">
-            <label class="inline-block text-80 pt-2 leading-tight" :for="field.latitude">Lat</label>
-          </div>
-          <div class="py-3 w-4/5">
-            <input :id="field.latitude" type="text"
-                   class="w-full form-control form-input form-input-bordered"
-                   :class="errorClasses"
-                   :placeholder="field.latitude"
-                   v-model="field.lat"
-            />
-          </div>
-        </div>
-        <div class="flex w-1/2">
-          <div class="w-1/5 py-3 pl-2">
-            <label class="inline-block text-80 pt-2 leading-tight" :for="field.longitude">Lng</label>
-          </div>
-          <div class="py-3 w-4/5">
-            <input :id="field.longitude" type="text"
-                   class="w-full form-control form-input form-input-bordered"
-                   :class="errorClasses"
-                   :placeholder="field.longitude"
-                   v-model="field.lng"
-            />
-          </div>
-        </div>
+      <div class="py-3 w-4/5">
+        <input :id="field.latitude" type="text"
+               class="w-full form-control form-input form-input-bordered"
+               :class="errorClasses"
+               :placeholder="field.latitude"
+               v-model="field.lat"
+        />
       </div>
-      <p v-if="hasError" class="my-2 text-danger">
-        {{ firstError }}
-      </p>
-    </template>
-  </default-field>
+    </div>
+    <div class="flex w-1/2">
+      <div class="w-1/5 py-3 pl-2">
+        <label class="inline-block text-80 pt-2 leading-tight" :for="field.longitude">Lng</label>
+      </div>
+      <div class="py-3 w-4/5">
+        <input :id="field.longitude" type="text"
+               class="w-full form-control form-input form-input-bordered"
+               :class="errorClasses"
+               :placeholder="field.longitude"
+               v-model="field.lng"
+        />
+      </div>
+    </div>
+  </div>
+  <p v-if="hasError" class="my-2 text-danger">
+    {{ firstError }}
+  </p>
+</template>
+</default-field>
 </template>
 
 <style scoped>
@@ -83,11 +83,16 @@ export default {
       latLngResult: undefined
     }
   },
+
   mounted() {
     let address = this;
-    let initialValues = JSON.parse(this.field.value);
-    let lat = this.field.lat || this.field.initial_lat || 38.261842;
-    let lng = this.field.lng ||this.field.initial_lng || -0.6868031;
+
+    let initialValues = !!this.field && !!this.field.value ?
+        JSON.parse(this.field.value) :
+        { formatted_address: 'Sydney NSW, Australia', lat: -33.8688197, lng: 151.2092955 };
+
+    let lat = this.field.lat || this.field.initial_lat || initialValues.lat;
+    let lng = this.field.lng || this.field.initial_lng || initialValues.lng;
 
     this.field.latitude = lat;
     this.field.longitude = lng;
