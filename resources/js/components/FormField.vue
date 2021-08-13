@@ -111,8 +111,8 @@ export default {
         { types: ["geocode"] }
     );
 
-    map.setCenter({ lat, lng });
-    marker.setPosition({ lat, lng });
+    map.setCenter(mapsLatLng);
+    marker.setPosition(mapsLatLng);
 
     places.addListener('place_changed', () => {
       const place = places.getPlace();
@@ -157,13 +157,14 @@ export default {
       });
     });
   },
+
   methods: {
     setInitialValue() {
       this.value = this.field.value || ''
     },
 
     fill(formData) {
-      formData.append(this.field.attribute, this.value || '');
+      formData.append(this.field.attribute, this.placeResult || '');
       formData.append(this.field.latitude, this.field.lat || '');
       formData.append(this.field.longitude, this.field.lng || '');
     },
