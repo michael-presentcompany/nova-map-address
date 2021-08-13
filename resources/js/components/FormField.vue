@@ -1,7 +1,9 @@
 <template>
   <default-field :field="field">
     <template slot="field">
-      <div class="google-map w-full" :id="mapName"></div><br>
+      <div class="google-map w-full" :id="mapName" />
+
+      <br>
 
       <div class="w-full">
         <vue-google-autocomplete
@@ -53,22 +55,23 @@
       <p v-if="hasError" class="my-2 text-danger">
         {{ firstError }}
       </p>
-
     </template>
   </default-field>
 </template>
+
 <style scoped>
 .google-map {
-  width: 900px;
-  height: 600px;
+  width: 100%;
+  height: 300px;
   margin: 0 auto;
   background: gray;
   border:solid 1px #ccc;
 }
 </style>
+
 <script>
-import { FormField, HandlesValidationErrors } from 'laravel-nova'
-import VueGoogleAutocomplete from 'vue-google-autocomplete'
+import { FormField, HandlesValidationErrors } from 'laravel-nova';
+import VueGoogleAutocomplete from 'vue-google-autocomplete';
 
 export default {
   name: 'google-map',
@@ -76,7 +79,8 @@ export default {
   props: ['resourceName', 'resourceId', 'field'],
   data() {
     return {
-      mapName: `${this.name}-map`,
+      mapName: `${this.name || 'gem'}-map`,
+      placeResult: undefined
     }
   },
   mounted() {
@@ -84,53 +88,63 @@ export default {
     let lat = this.field.lat || this.field.initial_lat || 38.261842;
     let lng = this.field.lng ||this.field.initial_lng || -0.6868031;
 
+    this.field.latitude = lat;
+    this.field.longitude = lng;
+
     const element = document.getElementById(this.mapName);
+    const mapsLatLng = new google.maps.LatLng(lat, lng);
 
     const map = new google.maps.Map(element, {
       zoom: this.field.zoom || 4,
-      center: new google.maps.LatLng(lat, lng)
+      center: mapsLatLng
+    });
+
+    const marker = new google.maps.Marker({
+      position: mapsLatLng,
+      map
     });
 
     const geocoder = new google.maps.Geocoder();
 
-    const marker = new google.maps.Marker({
-      position: new google.maps.LatLng(lat, lng),
-      map: map
-    });
-
-    const places  = new google.maps.places.Autocomplete(
+    const places = new google.maps.places.Autocomplete(
         document.getElementById(this.field.name),
         { types: ["geocode"] }
     );
 
-    places.addListener("place_changed", () => {
-      console.log(places.getPlace())
+    map.setCenter({ lat, lng });
+    marker.setPosition({ lat, lng });
+
+    places.addListener('place_changed', () => {
+      const place = places.getPlace();
+      const placeLat = place.geometry.location.lat();
+      const placeLng = place.geometry.location.lng();
+
       this.fillInLatLng({
-        address: places.getPlace().formatted_address,
-        lat: places.getPlace().geometry.location.lat(),
-        lng: places.getPlace().geometry.location.lng(),
+        place: {
+          address_components: place.address_components,
+          formatted_address: place.formatted_address,
+          adr_address: place.adr_address,
+          place_id: place.place_id,
+          url: place.url,
+          lat: placeLat,
+          lng: placeLng
+        },
+        address: place.formatted_address,
+        lat: placeLat,
+        lng: placeLng,
         marker,
         map
       })
     });
 
-    google.maps.event.addListener(map, 'click', function(event) {
-      marker.setPosition(event.latLng)
+    google.maps.event.addListener(map, 'click', (event) => {
+      marker.setPosition(event.latLng);
 
       geocoder.geocode({'location': event.latLng}, (results, status) => {
         if (status === google.maps.GeocoderStatus.OK) {
-          if (results[0]) {
-            let result = results[0];
+          let result = results[0];
 
-            if (address.field.hasOwnProperty('google_result_type')) {
-              for (let i = 0; i < results.length; i++) {
-                if (results[i].types.length > 0 && results[i].types.includes(address.field.google_result_type)) {
-                  result = results[i];
-                  break;
-                }
-              }
-            }
-
+          if (result) {
             address.value = result.formatted_address;
             address.field.lat = event.latLng.lat().toFixed(6);
             address.field.lng = event.latLng.lng().toFixed(6);
@@ -138,7 +152,7 @@ export default {
             console.error('No results found');
           }
         } else {
-          console.error('Geocoder failed due to: ' + status);
+          console.error(`Geocoder failed due to: ${status}`);
         }
       });
     });
@@ -158,13 +172,14 @@ export default {
       this.value = value;
     },
 
-    fillInLatLng({ address, lat, lng, marker, map }) {
+    fillInLatLng({ address, place, lat, lng, marker, map }) {
       this.field.latitude = lat;
       this.field.longitude = lng;
+      this.placeResult = JSON.stringify(place);
       this.value = address;
 
-      marker.setPosition( new google.maps.LatLng( lat, lng ) );
-      map.panTo( new google.maps.LatLng( lat, lng ) );
+      marker.setPosition(new google.maps.LatLng( lat, lng ));
+      map.panTo(new google.maps.LatLng( lat, lng ));
     },
   },
 }
