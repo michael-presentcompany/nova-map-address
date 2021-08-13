@@ -21,11 +21,11 @@ class MapAddress extends Field
      *
      * @return self
      */
-    public function initLocation($latitude, $longitude)
+    public function initLocation($map)
     {
         return $this->withMeta([
-            'initial_lat' => $latitude,
-            'initial_lng' => $longitude,
+            'initial_lat' => json_decode($map->map)->lat,
+            'initial_lng' => json_decode($map->map)->lng,
         ]);
     }
 
