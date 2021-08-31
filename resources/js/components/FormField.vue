@@ -36,7 +36,7 @@
                :class="errorClasses"
                :placeholder="field.latitude"
                v-model="field.lat"
-               :value="field.latitude"
+               value="field.latitude"
         />
       </div>
     </div>
@@ -50,7 +50,7 @@
                :class="errorClasses"
                :placeholder="field.longitude"
                v-model="field.lng"
-               :value="field.longitude"
+               value="field.longitude"
         />
       </div>
     </div>
