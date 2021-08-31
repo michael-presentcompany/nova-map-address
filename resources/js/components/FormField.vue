@@ -50,6 +50,7 @@
                :class="errorClasses"
                :placeholder="field.longitude"
                v-model="field.lng"
+               :value="field.longitude"
         />
       </div>
     </div>
