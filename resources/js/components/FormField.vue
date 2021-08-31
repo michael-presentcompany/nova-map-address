@@ -105,6 +105,12 @@ export default {
     this.field.longitude = lng;
     this.value = initialValues.formatted_address;
 
+    this.fillInLatLng({
+      address: this.value,
+      lat: lat,
+      lng: lng
+    });
+
     const element = document.getElementById(this.mapName);
     const mapsLatLng = new google.maps.LatLng(lat, lng);
 
@@ -172,7 +178,7 @@ export default {
     },
 
     fill(formData) {
-      formData.append(this.field.attribute, this.latLngResult || '');
+      formData.append(this.field.attribute, this.latLngResult || JSON.stringify({formatted_address: address, lat, lng}) || '');
       formData.append(this.field.latitude, this.field.lat || '');
       formData.append(this.field.longitude, this.field.lng || '');
     },
