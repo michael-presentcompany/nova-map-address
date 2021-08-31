@@ -36,7 +36,7 @@
                :class="errorClasses"
                :placeholder="field.latitude"
                v-model="field.lat"
-               value="field.latitude"
+               :value="field.latitude"
         />
       </div>
     </div>
@@ -50,7 +50,7 @@
                :class="errorClasses"
                :placeholder="field.longitude"
                v-model="field.lng"
-               value="field.longitude"
+               :value="field.longitude"
         />
       </div>
     </div>
@@ -83,7 +83,11 @@ export default {
   data() {
     return {
       mapName: `${this.name || 'gem'}-map`,
-      latLngResult: undefined
+      latLngResult: undefined,
+      field: {
+        lng: this.field.lng,
+        lat: this.field.lat
+      }
     }
   },
 
