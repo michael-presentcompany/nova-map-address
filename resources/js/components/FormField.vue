@@ -17,6 +17,7 @@
           class="w-full form-control form-input form-input-bordered"
           :class="errorClasses"
           :placeholder="field.name"
+          :value="field.name"
           v-model="value"
       />
     </vue-google-autocomplete>
@@ -35,6 +36,7 @@
                :class="errorClasses"
                :placeholder="field.latitude"
                v-model="field.lat"
+               :value="field.latitude"
         />
       </div>
     </div>
