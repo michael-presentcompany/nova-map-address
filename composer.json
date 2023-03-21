@@ -1,7 +1,7 @@
 {
     "name": "josrom/nova-map-address",
     "description": "A Laravel Nova field to place a marker on map to get coordinates then it reverse geocoding the coordinates to get a street address",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "keywords": [
         "laravel",
         "nova",
@@ -13,7 +13,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.1.0",
-        "illuminate/support": "^5.7|^6.0|^7.0|^8.0"
+        "illuminate/support": ">=8.83.0"
     },
     "autoload": {
         "psr-4": {
